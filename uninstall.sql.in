@@ -27,7 +27,7 @@ prompt
 
 --
 -- Drop public synonyms
-@@datadir@/drop_synonym ORADBA_SQLINSTALLER PUBLIC
+@@datadir@/drop_synonym SQLINSTALLER PUBLIC
 @@datadir@/drop_synonym SQLINSTALLER_CONFIG_TYPE PUBLIC
 
 --

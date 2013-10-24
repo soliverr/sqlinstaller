@@ -41,13 +41,13 @@ prompt
 
 --
 -- Create packages
-@@datadir@/packages/rias_sqlinstaller_def
-@@datadir@/packages/rias_sqlinstaller_body
+@@datadir@/packages/sqlinstaller_def
+@@datadir@/packages/sqlinstaller_body
 
 --
 -- Create synonyms
-create or replace public synonym sqlinstaller_config_type for &&ORADBA_SYS_OWNER..sqlinstaller_config_type;
-create or replace public synonym rias_sqlinstaller for &&ORADBA_SYS_OWNER..rias_sqlinstaller;
+create or replace public synonym SQLINSTALLER_CONFIG_TYPE for &&ORADBA_SYS_OWNER..sqlinstaller_config_type;
+create or replace public synonym SQLINSTALLER for &&ORADBA_SYS_OWNER..sqlinstaller;
 
 prompt
 prompt I: Package SQLINSTALLER created
