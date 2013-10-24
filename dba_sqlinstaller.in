@@ -219,7 +219,7 @@ NLS_LANG=${NLS_LANG:-$DEFAULT_NLS_LANG}
 # Set global logfile
 LOG_FILE_ALL=$ORABASE_LOG_FILE
 # Set session logfile
-ORABASE_LOG_FILE=$LOG_FILE.$$
+ORABASE_LOG_FILE=$ORABASE_LOG_FILE.$$
 
 # Check RDBMS mode
 db_role=`oracle_cfg DATABASE_ROLE`
