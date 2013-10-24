@@ -1,0 +1,49 @@
+--
+-- SQLInstaller uninstall
+--
+
+set echo off
+set define on
+set verify off
+set serveroutput on
+set feedback off
+
+whenever sqlerror exit sql.sqlcode;
+
+--
+-- Load ORADBA schema variables
+@@confdir@/schema-define
+
+prompt
+prompt I: Start deinstallation
+prompt
+
+--
+-- Set new schema owner
+alter session set current_schema = &&ORADBA_SYS_OWNER;
+prompt
+prompt I: Current schema is &&ORADBA_SYS_OWNER
+prompt
+
+--
+-- Drop public synonyms
+@@datadir@/drop_synonym ORADBA_SQLINSTALLER PUBLIC
+@@datadir@/drop_synonym SQLINSTALLER_CONFIG_TYPE PUBLIC
+
+--
+-- Drop packages
+@@datadir@/drop_package ORADBA_SQLINSTALLER
+
+--
+-- Drop configuration table
+@@datadir@/drop_table SQLINSTALLER$CONFIG
+
+--
+-- Drop configuration type
+@@datadir@/drop_type SQLINSTALLER_CONFIG_TYPE
+
+alter session set current_schema = &&l_cur_schema;
+
+prompt
+prompt I: Finish deinstallation
+prompt

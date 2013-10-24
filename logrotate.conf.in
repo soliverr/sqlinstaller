@@ -1,0 +1,13 @@
+# Ротация файла лога пакета
+@logdir@/@PACKAGE_NAME@.log {
+    compress
+    weekly
+    rotate 4
+    size 100M
+    minsize 10M
+    maxage 65
+    missingok
+    nocreate
+    dateext
+    olddir @archivelogdir@
+}

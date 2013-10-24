@@ -1,0 +1,246 @@
+#! /bin/bash
+#
+
+# Package identification ---------------------------------------------------------------
+SECTION="@SECTION@"
+PACKAGE_NAME="@PACKAGE_NAME@"
+PACKAGE_VERSION="@PACKAGE_VERSION@"
+PACKAGE_STRING="@PACKAGE_STRING@"
+
+# Base directories ---------------------------------------------------------------------
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+liblsb=@liblsb@
+libdir=@libdir@
+libexecdir=@libexecdir@
+sysconfdir=@sysconfdir@
+confdir=@confdir@
+localstatedir=@localstatedir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+logdir=@logdir@
+config=$confdir/${PACKAGE_NAME}.conf
+
+# Operational variables ----------------------------------------------------------------
+EXE_NAME=`basename $0`
+OPR=/usr/sbin/opr
+SQLPLUS="$ORACLE_HOME/bin/sqlplus"
+ORABASE_LOG_FILE=""
+CHECK=0
+DB=""
+DB_USER=""
+CMD_FILES=""
+
+# Default values -----------------------------------------------------------------------
+DEFAULT_LOG_FILE=$logdir/$PACKAGE_NAME.log
+DEFAULT_DB="local"
+DEFAULT_DB_USER="sys"
+
+# Read configuration -------------------------------------------------------------------
+[ -r $config ] && source $config
+
+# Global variables ---------------------------------------------------------------------
+#
+export libdir datadir sysconfdir confdir logdir libexecdir prefix config
+export OPR ORABASE_LOG_FILE EXE_NAME NLS_LANG
+
+# Functions and procedures -------------------------------------------------------------
+
+usage() {
+  cat << __EOFF__
+
+Usage: $EXE_NAME [OPTION]... CMD_FILE...
+Execute SQL-script to install/uninstall package
+
+Optional arguments:
+    --database              -- TNSAlias for database (local)
+    --user                  -- Database user (sys)
+    CMD_FILE                -- SQL-script
+__EOFF__
+}
+
+my_clean() {
+	# Append session logfile to common logfile
+	orabase_nl
+	orabase_nl
+	[ -f $ORABASE_LOG_FILE ] && cat $ORABASE_LOG_FILE >> $LOG_FILE_ALL
+
+	# Remove session logfile
+	rm -f $ORABASE_LOG_FILE
+}
+
+my_exit() {
+	my_clean
+	exit ${1:-0}
+}
+
+my_error_exit() {
+	orabase_error "$1"
+	my_exit ${2:-1}
+}
+
+# Execute SQL-script
+run_file() {
+
+  local file=$1 pwd usrid dbid sqlplus opr sysdba
+
+  # Check system user
+  if [ "$(id -un)" = "root" ] ; then
+     orabase_warn "Run script as root"
+     sqlplus="su oracle -c '$SQLPLUS /nolog'"
+     opr="su oracle -c '$OPR -r $DB $DB_USER'"
+  elif [ -z "$(id -Gn | grep '\bdba\b')" ] ; then
+     orabase_error "You don't have prirvilege to maintain packages in database"
+     return 10
+  else
+     sqlplus="$SQLPLUS /nolog"
+     opr="$OPR -r $DB $DB_USER"
+  fi
+
+
+  if [ ! -x "$SQLPLUS" ] ; then
+    orabase_error "No executable file $SQLPLUS"
+    return 2
+  fi
+
+  if [ ! -x "$OPR" ] ; then
+    orabase_warn "No executable file $OPR"
+  fi
+
+  if [ ! -r "$f" ] ; then
+    orabase_error "Can't read file $f"
+    return 3
+  fi
+
+  pwd="`eval $opr 2>/dev/null`"
+
+  if [ -n "$pwd" ] ; then
+    pwd="/$pwd"
+  else
+    pwd="/"
+    orabase_warn "Can't get password for $DB_USER@$DB"
+  fi
+
+  if [ "$DB" != "local" ] ; then
+     dbid="@$DB"
+  fi
+
+  if [ "$DB_USER" = "sys" -o "$DB_USER" = "SYS" ] ; then
+    sysdba=" as sysdba"
+    usrid=""
+    orabase_warn "Run SQLPLUS without password for database user SYS"
+  else
+    usrid="$DB_USER"
+  fi
+
+  pushd `dirname $f` > /dev/null 2>&1
+  eval $sqlplus << __EOFF__ >> $ORABASE_LOG_FILE 2>&1
+connect ${usrid}${pwd}${dbid}${sysdba}
+
+`[ -r $confdir/${PACKAGE_NAME}-set.sql ] && cat $confdir/${PACKAGE_NAME}-set.sql`
+
+`cat $f`
+
+exit;
+
+__EOFF__
+
+  rc=$?
+  popd > /dev/null 2>&1
+
+  local regexp='ERROR at line\|ORA-\|SP2-\|^Warning:'
+
+  # Output some lines to console
+  grep '\(^\|sqlinstaller>\|Warning:\)\(I:\|W:\|E:\)[[:space:]]\+' $ORABASE_LOG_FILE \
+   | grep -v "$SECTION-sqlinstaller" | sed -e 's/sqlinstaller>//g' | while read line ; do
+    if `echo "$line" | grep --no-message --quiet 'I:'` ; then
+      orabase_info "$line"
+    elif `echo "$line" | grep --no-message --quiet 'W:\|Warning:'` ; then
+      orabase_warn "$line"
+    elif `echo "$line" | grep --no-message --quiet 'E:'` ; then
+      orabase_error "$line"
+    fi
+  done
+
+  if [ $rc -eq 0 ] ; then
+    if grep --no-message --quiet "$regexp" $ORABASE_LOG_FILE ; then
+      orabase_warn "Some error was ignored by SQLPlus: "
+      grep --max-count=3 "$regexp" $ORABASE_LOG_FILE | while read l ; do
+        orabase_warn " $l"
+      done
+      rc=15
+    fi
+  elif [ $rc -gt 0 ] ; then
+    orabase_error "Errors in SQLPlus:"
+    grep --max-count=3 "$regexp" $ORABASE_LOG_FILE | while read l ; do
+      orabase_error " $l"
+    done
+  fi
+
+  return $rc
+}
+
+# Main programm ========================================================================
+
+# Set default logfile
+ORABASE_LOG_FILE=${LOG_FILE:-$DEFAULT_LOG_FILE}
+
+# Load libraries and variables ---------------------------------------------------------
+source $liblsb/orabase-functions 2>&- || { echo "File $liblsb/orabase-functions is not exists" >&2 | tee -a $ORABASE_LOG_FILE; exit 1; }
+source $liblsb/oracle-base-functions 2>&- || orabase_error_exit "File $liblsb/oracle-base-functions is not exists"
+source $liblsb/oradba-sqlfunctions 2>&- || orabase_error_exit "File $liblsb/oradba-sqlfunctions is not exists"
+
+# Set Oracle environment
+oracle_env
+
+TEMP=`getopt -o h --long help,database:,user: -n "$EXE_NAME" -- "$@"`
+
+[ $? != 0 ] && orabase_error_exit "Please, set working parameters"
+
+eval set -- "$TEMP"
+
+while true ; do
+    case "$1" in
+        --database) DB="$2"; shift 2 ;;
+        --user) DB_USER="$2"; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        --) shift ; break ;;
+        *) my_error_exit "Command line parsing error" ;;
+    esac
+done
+
+CMD_FILES=$@
+
+# Set default values
+DB=${DB:-$DEFAULT_DB}
+DB_USER=${DB_USER:-$DEFAULT_DB_USER}
+NLS_LANG=${NLS_LANG:-$DEFAULT_NLS_LANG}
+
+# Set global logfile
+LOG_FILE_ALL=$ORABASE_LOG_FILE
+# Set session logfile
+ORABASE_LOG_FILE=$LOG_FILE.$$
+
+# Check RDBMS mode
+db_role=`oracle_cfg DATABASE_ROLE`
+if [ "$db_role" != "PRIMARY" -a "x$db_role" != "x" ] ; then
+     orabase_warn "RDBMS should be in 'PRIMARY' mode"
+     my_exit
+fi
+
+for f in $CMD_FILES ; do
+  orabase_info "Run SQL-script '$f' as database user '$DB_USER' in database '$DB'"
+
+  run_file $f
+
+  rc=$?
+
+  [ $rc -gt 0 ] && my_error_exit "Error $rc while executing SQL-script $f" $rc
+
+  orabase_info "SQL-script $f is executed successfully"
+done
+
+
+# The end
+my_exit $rc
+

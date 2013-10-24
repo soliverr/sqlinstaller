@@ -1,0 +1,138 @@
+#
+#
+
+SHELL           = /bin/bash
+INSTALL         = install
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+sqlsrcdir       = $(srcdir)/sql
+VPATH           = @srcdir@
+
+# Package identification ---------------------------------------------------------------
+SECTION         = @SECTION@
+PACKAGE_NAME    = @PACKAGE_NAME@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+PACKAGE_STRING  = @PACKAGE_STRING@
+
+# Base directories ---------------------------------------------------------------------
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+sbindir         = @sbindir@
+bindir          = @bindir@
+liblsb          = @liblsb@
+libdir          = @libdir@
+libexecdir      = @libexecdir@
+sysconfdir      = @sysconfdir@
+confdir         = @confdir@
+localstatedir   = @localstatedir@
+datarootdir     = @datarootdir@
+datadir         = @datadir@
+logdir          = @logdir@
+docdir          = @docdir@
+
+# Destination dir
+DESTDIR         =
+
+.PHONY: expand
+.PHONY: install install-dirs install-base-dirs install-docs install-files install-logrotate install-config
+.PHONY: install-crontab install-sql install-sh
+.PHONY: clean distclean mostlyclean
+
+install: expand install-dirs install-docs install-files
+
+expand: install.sql uninstall.sql sql/packages/sqlinstaller_def.sql _pkg-functions logrotate.conf
+	chmod +x $(srcdir)/build_expand.sh
+	$(srcdir)/build_expand.sh _pkg-functions
+	$(srcdir)/build_expand.sh logrotate.conf
+	$(srcdir)/build_expand.sh install.sql uninstall.sql
+	$(srcdir)/build_expand.sh sql/packages/sqlinstaller_def.sql
+
+install-base-dirs:
+	# Create base directories
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(confdir)
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(logdir)
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(datadir)
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(datadir)/{packages,tables,types}
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(sbindir)
+
+install-dirs: install-base-dirs
+	# Create package directories
+
+install-docs:
+	# Create documentation directories
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(docdir)
+	# Install doc files
+	if [ -r README ] ; then $(INSTALL) --mode 0644 README $(DESTDIR)$(docdir) ; fi
+
+install-files: install-config install-crontab install-sql install-sh install-logrotate
+	# Install files
+
+install-config:
+	# Install config files
+	if [ -r config.vars ] ; then \
+	    $(INSTALL) --mode 664 config.vars $(DESTDIR)$(confdir)/$(PACKAGE_NAME).conf ; \
+	fi
+
+install-crontab:
+
+install-sql:
+	# Install sql-files
+	$(INSTALL) --mode 644 install.sql $(DESTDIR)$(datadir)
+	$(INSTALL) --mode 644 uninstall.sql $(DESTDIR)$(datadir)
+	$(INSTALL) --mode 664 set.sql $(DESTDIR)$(confdir)/$(PACKAGE_NAME)-set.sql
+	for f in `ls $(sqlsrcdir)/*.sql 2>/dev/null` ; do \
+	  $(INSTALL) --mode 644 $$f $(DESTDIR)$(datadir) ; \
+	done
+	for f in `ls $(sqlsrcdir)/packages/*.sql 2>/dev/null` ; do \
+	  [ -z "$$f" ] && continue; \
+	  $(INSTALL) --mode 644 $$f $(DESTDIR)$(datadir)/packages ; \
+	done
+	for f in `ls $(sqlsrcdir)/types/*.sql 2>/dev/null` ; do \
+	  [ -z "$$f" ] && continue; \
+	  $(INSTALL) --mode 644 $$f $(DESTDIR)$(datadir)/types ; \
+	done
+	for f in `ls $(sqlsrcdir)/tables/*.sql 2>/dev/null` ; do \
+	  [ -z "$$f" ] && continue; \
+	  $(INSTALL) --mode 644 $$f $(DESTDIR)$(datadir)/tables ; \
+	done
+
+install-sh:
+	# Install scripts
+	for f in `ls -1 *.sh | grep -v '.*build.sh\|build_expand.sh'` ; do \
+	  $(INSTALL) --mode 755 $$f $(DESTDIR)$(libexecdir) ; \
+	done
+	$(INSTALL) -D --mode 700 dba_sqlinstaller $(DESTDIR)$(sbindir)/$(SECTION)-sqlinstaller
+
+install-logrotate:
+	# Install logrotate configuration
+	if [ -f logrotate.conf ] ; then \
+	    $(INSTALL) -D --mode 644 logrotate.conf $(DESTDIR)$(sysconfdir)/logrotate.d/$(PACKAGE_NAME).conf; \
+	fi
+
+clean:
+	rm -fv logrotate.conf dba_sqlinstaller _pkg-functions build_expand.sh
+	rm -fv install.sql uninstall.sql
+	rm -fv sql/packages/sqlinstaller_def.sql
+	rm -fv Makefile config.h config.status config.cache config.log
+
+distclean: clean
+	rm -rf autom4te.cache
+	find . -type f -iwholename '*~' -exec rm -fv {} ';'
+	if [ -d test ]; then rm -rf test; fi
+	if [ -d inst ]; then rm -rf inst; fi
+
+mostlyclean: distclean
+
+maintainer-clean: distclean
+	fakeroot debian/rules clean || true
+
+# automatic re-running of configure if the configure.ac file has changed
+${srcdir}/configure: configure.ac
+	cd ${srcdir} && autoconf
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck

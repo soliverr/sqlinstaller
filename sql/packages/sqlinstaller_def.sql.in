@@ -1,0 +1,152 @@
+create or replace package sqlinstaller as
+  --
+  -- SQLInstaller package
+  --
+  -- Copyright (c) 2010, Kryazhevskikh Sergey, <soliverr@gmail.com>
+  --
+
+  -- Path to SQLInstaller scripts
+  --
+  datadir constant varchar2(512) := '@datadir@';
+
+  -- Constants
+  --
+  action_any    constant sqlinstaller$config.action%type := 0; -- Any action
+  action_create constant sqlinstaller$config.action%type := 1; -- Create objects
+  action_drop   constant sqlinstaller$config.action%type := 2; -- Drop objects
+  action_modify constant sqlinstaller$config.action%type := 3; -- Modify objects
+  --
+  enabled       constant sqlinstaller$config.value%type := 'TRUE';
+  disabled      constant sqlinstaller$config.value%type := 'FALSE';
+  --
+  -- Parameter names
+  --
+  p_object_name  constant sqlinstaller$config.value%type := 'ORADBA_SQLINSTALLER';
+  --
+  p_any_type     constant sqlinstaller$config.value%type := 'ANY_OBJECT';
+  p_inuse        constant sqlinstaller$config.value%type := 'CHECK_IN_USE';
+  p_package      constant sqlinstaller$config.value%type := 'PACKAGE';
+  p_package_body constant sqlinstaller$config.value%type := 'PACKAGE_BODY';
+  p_type         constant sqlinstaller$config.value%type := 'TYPE';
+  p_type_body    constant sqlinstaller$config.value%type := 'TYPE_BODY';
+  p_procedure    constant sqlinstaller$config.value%type := 'PROCEDURE';
+  p_table        constant sqlinstaller$config.value%type := 'TABLE';
+  p_view         constant sqlinstaller$config.value%type := 'VIEW';
+  p_sequence     constant sqlinstaller$config.value%type := 'SEQUENCE';
+  p_trigger      constant sqlinstaller$config.value%type := 'TRIGGER';
+  p_synonym      constant sqlinstaller$config.value%type := 'SYNONYM';
+  p_role         constant sqlinstaller$config.value%type := 'ROLE';
+  p_profile      constant sqlinstaller$config.value%type := 'PROFILE';
+  p_user         constant sqlinstaller$config.value%type := 'USER';
+
+  --
+  -- Set configuration parameter
+  --   parameter  - configuration parameter
+  procedure cfg_set( parameter IN sqlinstaller_config_type );
+  --
+  -- Get configuration parameter
+  --   parameter  - configuration parameter
+  function cfg_get( parameter IN sqlinstaller_config_type ) return sqlinstaller_config_type;
+  --
+  -- Get configuration parameter value
+  function cfg_get_value( parameter IN sqlinstaller_config_type ) return boolean;
+
+  -- Check if database object is in use
+  --
+  function is_object_in_use( otype IN varchar2, name IN varchar2 ) return integer;
+  function is_object_in_use( otype IN varchar2, name IN varchar2 ) return boolean;
+
+
+  -- Support for package header actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.PACKAGE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_package( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_package( name IN varchar2 ) return boolean ;
+
+  -- Support for package body actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.PACKAGE_BODY_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_package_body( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_package_body( name IN varchar2 ) return boolean ;
+
+  -- Support for procedure actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.PROCEDURE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_procedure( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_procedure( name IN varchar2 ) return boolean ;
+
+  -- Support for trigger actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.TRIGGER_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_trigger( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_trigger( name IN varchar2 ) return boolean ;
+
+  -- Support for type header actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.TYPE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_type( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_type( name IN varchar2 ) return boolean ;
+
+  -- Support for type body actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.TYPE_BODY_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_type_body( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_type_body( name IN varchar2 ) return boolean ;
+
+  -- Support for table actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.TABLE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_table( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_table( name IN varchar2 ) return boolean ;
+
+  -- Support for view actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.VIEW_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_view( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_view( name IN varchar2 ) return boolean ;
+
+  -- Support for synonym actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.SYNONYM_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_synonym( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_synonym( name IN varchar2 ) return boolean ;
+
+  -- Support for role actions
+  --   action       - Action name
+  --   name         - Name as ROLE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_role( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_role( name IN varchar2 ) return boolean ;
+
+  -- Support for profile actions
+  --   action       - Action name
+  --   name         - Name as [CASCADE.]PROFILE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_profile( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_profile( name IN varchar2 ) return boolean ;
+
+  -- Support for user actions
+  --   action       - Action name
+  --   name         - Name as [CASCADE.]USER_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_user( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_user( name IN varchar2 ) return boolean ;
+
+  -- Support for sequence actions
+  --   action       - Action name
+  --   name         - Name as SCHEMA.SEQUENCE_NAME
+  --   script       - Full path to SQL-script for this action and name
+  procedure do_sequence( action IN integer, name IN varchar2, script IN varchar2 default NULL );
+  function chk_sequence( name IN varchar2 ) return boolean ;
+
+end;
+/

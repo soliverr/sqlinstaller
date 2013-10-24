@@ -1,0 +1,72 @@
+--
+-- SQLInstaller install
+--
+
+set echo off
+set define on
+set verify off
+set serveroutput on
+set feedback off
+
+whenever sqlerror exit sql.sqlcode;
+
+--
+-- Load ORADBA schema variables
+@@confdir@/schema-define
+
+
+define ORA_SCHEMA_OWNER = &&ORADBA_SYS_OWNER
+define ORA_TBSP_TBLS = &&ORADBA_TBSP_TBLS
+define ORA_TBSP_INDX = &&ORADBA_TBSP_INDX
+
+prompt
+prompt I: Start installation
+prompt
+
+--
+-- Set new schema owner
+alter session set current_schema = &&ORADBA_SYS_OWNER;
+prompt
+prompt I: Current schema is &&ORADBA_SYS_OWNER
+prompt
+
+--
+-- Create type
+@@datadir@/types/sqlinstaller_config_type
+
+--
+-- Create and load configuration table
+@@datadir@/tables/sqlinstaller_config
+@@datadir@/tables/load_sqlinstaller_config
+
+--
+-- Create packages
+@@datadir@/packages/rias_sqlinstaller_def
+@@datadir@/packages/rias_sqlinstaller_body
+
+--
+-- Create synonyms
+create or replace public synonym sqlinstaller_config_type for &&ORADBA_SYS_OWNER..sqlinstaller_config_type;
+create or replace public synonym rias_sqlinstaller for &&ORADBA_SYS_OWNER..rias_sqlinstaller;
+
+prompt
+prompt I: Package SQLINSTALLER created
+prompt
+
+
+alter session set current_schema = &&l_cur_schema;
+
+prompt
+prompt I: Setting grants ...
+prompt
+grant select on sys.dba_jobs                    to &&ORADBA_SYS_OWNER;
+grant select on sys.dba_jobs_running            to &&ORADBA_SYS_OWNER;
+grant select on sys.dba_source                  to &&ORADBA_SYS_OWNER;
+grant select on sys.dba_triggers                to &&ORADBA_SYS_OWNER;
+grant select on sys.dba_objects                 to &&ORADBA_SYS_OWNER;
+grant select on sys.dba_roles                   to &&ORADBA_SYS_OWNER;
+grant select on sys.dba_profiles                to &&ORADBA_SYS_OWNER;
+
+prompt
+prompt I: Finish installation
+prompt

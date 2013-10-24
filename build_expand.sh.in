@@ -1,0 +1,73 @@
+#! /bin/bash
+#
+# Разименовать переменные, создаваемые скриптом configure, в заданных файлах
+# $Id$
+#
+
+# Файлы для обработки ------------------------------------------------------------------
+if [ $# -gt 0 ] ; then
+    files="$@"
+else
+    files=""
+fi
+
+# Package identification ---------------------------------------------------------------
+SECTION="@SECTION@"
+PACKAGE_NAME="@PACKAGE_NAME@"
+PACKAGE_TARNAME="@PACKAGE_TARNAME@"
+PACKAGE_VERSION="@PACKAGE_VERSION@"
+PACKAGE_STRING="@PACKAGE_STRING@"
+
+# Base directories ---------------------------------------------------------------------
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+sbindir="@sbindir@"
+bindir="@bindir@"
+liblsb="@liblsb@"
+libdir="@libdir@"
+libexecdir="@libexecdir@"
+sysconfdir="@sysconfdir@"
+confdir="@confdir@"
+localstatedir="@localstatedir@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+logdir="@logdir@"
+docdir="@docdir@"
+spooldir="@spooldir@"
+
+
+sedf=configure_expand.sed.$$
+
+cat << __EOFF__ | tr -d '!' > $sedf
+s#\${!SECTION!}#$SECTION#g
+s#\${!PACKAGE_NAME!}#$PACKAGE_NAME#g
+s#\${!PACKAGE_TARNAME!}#$PACKAGE_TARNAME#g
+s#\${!PACKAGE_VERSION!}#$PACKAGE_VERSION#g
+s#\${!PACKAGE_STRING!}#$PACKAGE_STRING#g
+s#\${!prefix!}#$prefix#g
+s#\${!exec_prefix!}#$exec_prefix#g
+s#\${!sbindir!}#$sbindir#g
+s#\${!bindir!}#$bindir#g
+s#\${!liblsb!}#$liblsb#g
+s#\${!libdir!}#$libdir#g
+s#\${!libexecdir!}#$libexecdir#g
+s#\${!sysconfdir!}#$sysconfdir#g
+s#\${!confdir!}#$confdir#g
+s#\${!localstatedir!}#$localstatedir#g
+s#\${!datarootdir!}#$datarootdir#g
+s#\${!datadir!}#$datadir#g
+s#\${!logdir!}#$logdir#g
+s#\${!docdir!}#$docdir#g
+s#\${!spooldir!}#$spooldir#g
+
+__EOFF__
+
+
+
+for f in $files; do
+   echo "Process file $f"
+   sed --in-place --file $sedf $f
+done
+
+rm -f $sedf
+
