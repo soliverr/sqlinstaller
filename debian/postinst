@@ -1,0 +1,35 @@
+#!/bin/bash
+# postinst script for rias-audit
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+#DEBHELPER#
+
+postinst "debian" "$@"
+
+_attr() {
+  chown "$2" "$3" && chmod "$1" "$3"
+}
+
+# Set filesystems rights
+if [ "$1" = "configure" ] ; then
+  dpkg -s "oradba-$PACKAGE_NAME" | grep "etc/" | cut -d ' ' -f 2 | while read f ; do
+    _attr 664 oracle:oinstall $f
+  done
+fi
+
+exit 0

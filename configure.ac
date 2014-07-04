@@ -82,7 +82,7 @@ AC_SUBST(liblsb)
 AC_MSG_RESULT($liblsb)
 
 dnl --with-logdir
-logdir='${localstatedir}/log/oracle/${SECTION}/${PACKAGE_NAME}'
+logdir='${localstatedir}/log/${SECTION}/${PACKAGE_NAME}'
 AC_MSG_CHECKING(logdir)
 AC_ARG_WITH(logdir,
 [  --with-logdir=DIR       Directory for logfiles [LOCALSTATEDIR/log/oracle/SECTION/PACKAGE_NAME] ],
@@ -102,7 +102,7 @@ AC_SUBST(logdir)
 AC_MSG_RESULT($logdir)
 
 dnl --with-archivelogdir
-archivelogdir='${localstatedir}/log/oracle/archive/${SECTION}/${PACKAGE_NAME}'
+archivelogdir='${localstatedir}/log/${SECTION}/archive/${PACKAGE_NAME}'
 AC_MSG_CHECKING(archivelogdir)
 AC_ARG_WITH(archivelogdir,
 [  --with-archivelogdir=DIR       Directory to keep rotated logfiles [LOCALSTATEDIR/log/oracle/archive/SECTION/PACKAGE_NAME] ],
@@ -122,7 +122,7 @@ AC_SUBST(archivelogdir)
 AC_MSG_RESULT($archivelogdir)
 
 dnl --with-confdir
-confdir='${sysconfdir}/oracle/${SECTION}'
+confdir='${sysconfdir}/${SECTION}'
 AC_MSG_CHECKING(confdir)
 AC_ARG_WITH(confdir,
 [  --with-confdir=DIR      Directory for config files [SYSCONFDIR/oracle/SECTION] ],
@@ -142,7 +142,7 @@ AC_SUBST(confdir)
 AC_MSG_RESULT($confdir)
 
 dnl --with-spooldir
-spooldir='${localstatedir}/spool/oracle/${SECTION}/${PACKAGE_NAME}'
+spooldir='${localstatedir}/spool/${SECTION}/${PACKAGE_NAME}'
 AC_MSG_CHECKING(spooldir)
 AC_ARG_WITH(spooldir,
 [  --with-spooldir=DIR     Directory for spool files [LOCALSTATEDIR/spool/oracle/SECTION/PACKAGE_NAME] ],

@@ -1,0 +1,14 @@
+Source: oradba-sqlinstaller
+Section: utils
+Priority: required
+Maintainer: Kryazhevskikh Sergey, <soliverr@gmail.com>
+Build-Depends: debhelper (>= 5), oracle-client
+Standards-Version: 3.7.2
+
+Package: oradba-sqlinstaller
+Architecture: all
+Depends: oracle-server, oracle-base, opr, oradba-schema, oradba-sqlfunctions
+Description: Support installation procedure for Oracle database.
+ This package contains script to support installation procedue of 
+ various database objects into Oracle RDBMS.
+ .

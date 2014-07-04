@@ -1,0 +1,8 @@
+oradba-sqlinstaller
+===================
+
+This package try to install an sqlinstaller database objects on locally running Oracle database.
+
+See README file for details.
+
+ -- Kryazhevskikh Sergey <soliverr@gmail.com>

@@ -1,0 +1,3 @@
+etc/oradba/sqlinstaller.conf
+etc/oradba/sqlinstaller-set.sql
+etc/logrotate.d/sqlinstaller.conf

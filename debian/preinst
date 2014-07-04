@@ -1,0 +1,21 @@
+#!/bin/bash
+# preinst script for rias-audit
+#
+# see: dh_installdeb(1)
+
+#set -e
+
+# summary of how this script can be called:
+#        * <new-preinst> `install'
+#        * <new-preinst> `install' <old-version>
+#        * <new-preinst> `upgrade' <old-version>
+#        * <old-preinst> `abort-upgrade' <new-version>
+#
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+#DEBHELPER#
+
+preinst "debian" $@
+
+exit 0

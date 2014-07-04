@@ -1,0 +1,27 @@
+2011-01-24  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Cotrol table to enable/disble sqlinstaller actions
+
+2011-01-24  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Support TYPE and TRIGGER database object
+
+2010-12-15  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Add PL/SQL package to suport installation/uninstallation process
+
+2010-12-09  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Added procedure to drop table
+
+2009-08-25  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Support PRIMARY/STANDBY mode setted in configuration file
+
+2009-07-21  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Fixed execution error through `su'
+
+2009-07-15  Kryazhevskikh Sergey  <soliverr@gmail.com>
+
+    * Initioal version of package

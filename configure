@@ -1778,7 +1778,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $liblsb" >&5
 $as_echo "$liblsb" >&6; }
 
-logdir='${localstatedir}/log/oracle/${SECTION}/${PACKAGE_NAME}'
+logdir='${localstatedir}/log/${SECTION}/${PACKAGE_NAME}'
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking logdir" >&5
 $as_echo_n "checking logdir... " >&6; }
 
@@ -1802,7 +1802,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $logdir" >&5
 $as_echo "$logdir" >&6; }
 
-archivelogdir='${localstatedir}/log/oracle/archive/${SECTION}/${PACKAGE_NAME}'
+archivelogdir='${localstatedir}/log/${SECTION}/archive/${PACKAGE_NAME}'
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking archivelogdir" >&5
 $as_echo_n "checking archivelogdir... " >&6; }
 
@@ -1826,7 +1826,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $archivelogdir" >&5
 $as_echo "$archivelogdir" >&6; }
 
-confdir='${sysconfdir}/oracle/${SECTION}'
+confdir='${sysconfdir}/${SECTION}'
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking confdir" >&5
 $as_echo_n "checking confdir... " >&6; }
 
@@ -1850,7 +1850,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $confdir" >&5
 $as_echo "$confdir" >&6; }
 
-spooldir='${localstatedir}/spool/oracle/${SECTION}/${PACKAGE_NAME}'
+spooldir='${localstatedir}/spool/${SECTION}/${PACKAGE_NAME}'
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking spooldir" >&5
 $as_echo_n "checking spooldir... " >&6; }
 

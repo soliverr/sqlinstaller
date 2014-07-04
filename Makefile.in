@@ -29,6 +29,8 @@ localstatedir   = @localstatedir@
 datarootdir     = @datarootdir@
 datadir         = @datadir@
 logdir          = @logdir@
+archivelogdir   = @archivelogdir@
+spooldir		= @spooldir@
 docdir          = @docdir@
 
 # Destination dir
@@ -52,6 +54,8 @@ install-base-dirs:
 	# Create base directories
 	$(INSTALL) --directory --mode 755 $(DESTDIR)$(confdir)
 	$(INSTALL) --directory --mode 755 $(DESTDIR)$(logdir)
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(archivelogdir)
+	$(INSTALL) --directory --mode 755 $(DESTDIR)$(spooldir)
 	$(INSTALL) --directory --mode 755 $(DESTDIR)$(datadir)
 	$(INSTALL) --directory --mode 755 $(DESTDIR)$(datadir)/{packages,tables,types}
 	$(INSTALL) --directory --mode 755 $(DESTDIR)$(sbindir)
