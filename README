@@ -3,8 +3,8 @@ oradba-sqlinstaller
 
 Support installation/deinstallation packages into Oracle RDBMS.
 
-
-Project is hosted on SourceForge: http://sourceforge.net/projects/oracledba
+Project is hosted on GitHub: https://github.com/soliverr/sqlinstaller
+Source mirror on  SourceForge: http://sourceforge.net/projects/oracledba
 
  -- Kryazhevskikh Sergey <soliverr@gmail.com>
 
