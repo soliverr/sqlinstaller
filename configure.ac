@@ -85,7 +85,7 @@ dnl --with-logdir
 logdir='${localstatedir}/log/${SECTION}/${PACKAGE_NAME}'
 AC_MSG_CHECKING(logdir)
 AC_ARG_WITH(logdir,
-[  --with-logdir=DIR       Directory for logfiles [LOCALSTATEDIR/log/oracle/SECTION/PACKAGE_NAME] ],
+[  --with-logdir=DIR       Directory for logfiles [LOCALSTATEDIR/log/SECTION/PACKAGE_NAME] ],
 [ case "$withval" in
     no)
         AC_MSG_ERROR(Need logdir)
@@ -105,7 +105,7 @@ dnl --with-archivelogdir
 archivelogdir='${localstatedir}/log/${SECTION}/archive/${PACKAGE_NAME}'
 AC_MSG_CHECKING(archivelogdir)
 AC_ARG_WITH(archivelogdir,
-[  --with-archivelogdir=DIR       Directory to keep rotated logfiles [LOCALSTATEDIR/log/oracle/archive/SECTION/PACKAGE_NAME] ],
+[  --with-archivelogdir=DIR       Directory to keep rotated logfiles [LOCALSTATEDIR/log/SECTION/archive/PACKAGE_NAME] ],
 [ case "$withval" in
     no)
         AC_MSG_ERROR(Need archivelogdir)
@@ -125,7 +125,7 @@ dnl --with-confdir
 confdir='${sysconfdir}/${SECTION}'
 AC_MSG_CHECKING(confdir)
 AC_ARG_WITH(confdir,
-[  --with-confdir=DIR      Directory for config files [SYSCONFDIR/oracle/SECTION] ],
+[  --with-confdir=DIR      Directory for config files [SYSCONFDIR/SECTION] ],
 [ case "$withval" in
     no)
         AC_MSG_ERROR(Need confdir)
@@ -145,7 +145,7 @@ dnl --with-spooldir
 spooldir='${localstatedir}/spool/${SECTION}/${PACKAGE_NAME}'
 AC_MSG_CHECKING(spooldir)
 AC_ARG_WITH(spooldir,
-[  --with-spooldir=DIR     Directory for spool files [LOCALSTATEDIR/spool/oracle/SECTION/PACKAGE_NAME] ],
+[  --with-spooldir=DIR     Directory for spool files [LOCALSTATEDIR/spool/SECTION/PACKAGE_NAME] ],
 [ case "$withval" in
     no)
         AC_MSG_ERROR(Need confdir)

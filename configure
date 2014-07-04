@@ -1252,10 +1252,10 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-liblsb=DIR       Directory for system wide functions files /lib/lsb
-  --with-logdir=DIR       Directory for logfiles LOCALSTATEDIR/log/oracle/SECTION/PACKAGE_NAME
-  --with-archivelogdir=DIR       Directory to keep rotated logfiles LOCALSTATEDIR/log/oracle/archive/SECTION/PACKAGE_NAME
-  --with-confdir=DIR      Directory for config files SYSCONFDIR/oracle/SECTION
-  --with-spooldir=DIR     Directory for spool files LOCALSTATEDIR/spool/oracle/SECTION/PACKAGE_NAME
+  --with-logdir=DIR       Directory for logfiles LOCALSTATEDIR/log/SECTION/PACKAGE_NAME
+  --with-archivelogdir=DIR       Directory to keep rotated logfiles LOCALSTATEDIR/log/SECTION/archive/PACKAGE_NAME
+  --with-confdir=DIR      Directory for config files SYSCONFDIR/SECTION
+  --with-spooldir=DIR     Directory for spool files LOCALSTATEDIR/spool/SECTION/PACKAGE_NAME
 
 Report bugs to <soliverr@gmail.com>.
 _ACEOF
